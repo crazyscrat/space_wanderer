@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2b04df989f4494b9ecd226c3bef40f, type: 3}
+  m_Name: LevelData5
+  m_EditorClassIdentifier: 
+  _level: 5
+  _background: {fileID: 21300000, guid: e9e9f9ef6000a0d449fe5228d5ba45a9, type: 3}
+  _minAsteriodTypes: 0
+  _maxAsteriodTypes: 5
+  _minAsteriodVictory: 10
+  _maxAsteriodVictory: 50
+  _maxAsteriodView: 18
+  _asteroidCooldown: 0.4
