@@ -53,12 +53,12 @@ public class AsteroidSpawner : MonoBehaviour
   
   void StartSpawn()
   {
-    Observable.Timer(TimeSpan.FromSeconds(_logic.CurrentLevelData.AsteroidCooldown))
+    Observable.Timer(TimeSpan.FromSeconds(_logic.ModelData.AsteroidCooldown))
       .Repeat()
       .Subscribe(_ =>
         {
           Debug.Log("SPAWN TIMER");
-          if (_asteroidsView < _logic.CurrentLevelData.AsteroidMaxView) SpawnAsteroid();
+          if (_asteroidsView < _logic.ModelData.AsteroidMaxView) SpawnAsteroid();
         }
       ).AddTo(_disposable);
   }
@@ -72,7 +72,7 @@ public class AsteroidSpawner : MonoBehaviour
   {
     Vector2 position = transform.position + Vector3.right * Random.Range(-7f, 7f);
 
-    int index = Random.Range(0, _logic.CurrentLevelData.AsteroidTypes);
+    int index = Random.Range(0, _logic.ModelData.AsteroidTypes);
     AsteroidControl asteroid = _factory.GetAsteroid(index, position);
     asteroid.gameObject.SetActive(true);
     asteroid.Construct(this);
@@ -89,6 +89,6 @@ public class AsteroidSpawner : MonoBehaviour
   public void DestroyAsteroid(AsteroidControl asteroid)
   {
     _asteroidsView--;
-    _logic.CurrentLevelData.Score += asteroid.GetScore();
+    _logic.ModelData.Score += asteroid.GetScore();
   }
 }

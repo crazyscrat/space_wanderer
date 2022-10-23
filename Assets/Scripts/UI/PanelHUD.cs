@@ -26,16 +26,16 @@ public class PanelHUD : MonoBehaviour
 
   public void Subscribes()
   {
-    _logic.CurrentLevelData.PlayerLifes
-      .ObserveEveryValueChanged(value => _logic.CurrentLevelData.PlayerLifes.Value)
+    _logic.ModelData.PlayerLifes
+      .ObserveEveryValueChanged(value => _logic.ModelData.PlayerLifes.Value)
       .Subscribe(value =>
       {
         ChangeLifes();
       })
       .AddTo(_disposable);
 
-    _logic.CurrentLevelData.EnemiesDestroyed
-      .ObserveEveryValueChanged(value => _logic.CurrentLevelData.EnemiesDestroyed.Value)
+    _logic.ModelData.EnemiesDestroyed
+      .ObserveEveryValueChanged(value => _logic.ModelData.EnemiesDestroyed.Value)
       .Subscribe(value => { ChangeScore(); })
       .AddTo(_disposable);
 
@@ -54,12 +54,12 @@ public class PanelHUD : MonoBehaviour
 
   private void ChangeScore()
   {
-    _textScore.text = $"{_logic.CurrentLevelData.EnemiesDestroyed.Value}/{_logic.CurrentLevelData.EnemiesDestroyForWIn.Value}";
+    _textScore.text = $"{_logic.ModelData.EnemiesDestroyed.Value}/{_logic.ModelData.EnemiesDestroyForWIn.Value}";
   }
 
   private void ChangeLifes()
   {
-    int value = _logic.CurrentLevelData.PlayerLifes.Value;
+    int value = _logic.ModelData.PlayerLifes.Value;
     if (value >= 0)
     {
       for (int i = 0; i < lifes.Length; i++)

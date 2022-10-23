@@ -20,7 +20,7 @@ namespace UI
     public ReactiveProperty<bool> isFire { get; private set; }
     public ReactiveProperty<Vector2> JoystickPosition { get; set; }
     
-    public async Task Construct(LogicController logic, Factory factory)
+    public void Construct(LogicController logic, Factory factory)
     {
       _factory = factory;
       JoystickPosition = new ReactiveProperty<Vector2>(Vector2.zero);
@@ -70,14 +70,14 @@ namespace UI
           break;
       }
     }
-    
-    public void ActivateLevelUI(bool activate)
+
+    private void ActivateLevelUI(bool activate)
     {
       PanelMenuActive(!activate);
       PanelHUDActive(activate);
     }
-    
-    public void ActivateMenu(bool activate)
+
+    private void ActivateMenu(bool activate)
     {
       PanelMenuActive(activate);
       PanelHUDActive(!activate);

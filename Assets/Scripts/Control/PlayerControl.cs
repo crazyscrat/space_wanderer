@@ -110,7 +110,7 @@ public class PlayerControl : MonoBehaviour
   {
     if (collision.tag.Equals("Enemy"))
     {
-      _logic.CurrentLevelData.PlayerLifes.Value -= 1;
+      _logic.ModelData.PlayerLifes.Value -= 1;
       _factory.DestroyAsteroid(collision.gameObject);
     }
   }

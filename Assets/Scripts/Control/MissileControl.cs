@@ -52,7 +52,7 @@ public class MissileControl : MonoBehaviour
         {
             collision.GetComponent<Enemy>().Hit();
             //TODO add score
-            _logic.CurrentLevelData.EnemiesDestroyed.Value++;
+            _logic.ModelData.EnemiesDestroyed.Value++;
         }
         Disable();
     }

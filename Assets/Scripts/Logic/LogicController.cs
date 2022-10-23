@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using Data;
 using UI;
 using UnityEngine;
@@ -19,51 +20,45 @@ namespace Logic
     private CompositeDisposable _disposable = new CompositeDisposable();
     private CompositeDisposable _disposableMenu = new CompositeDisposable();
 
-    [SerializeField] private CurrentData _currentLevelData = new CurrentData();
+    [SerializeField] private ModelData _modelData;
+    public ModelData ModelData => _modelData;
 
-    public CurrentData CurrentLevelData => _currentLevelData;
+
     public ReactiveProperty<GameState> CurrentGameState { get; set; }
 
     public ReactiveCommand<int> SelectLevel = new ReactiveCommand<int>();
 
-    private GameStateData _gameStateData;
-    public GameStateData SavedStateData => _gameStateData;
+    //private GameStateData _gameStateData;
+    public UserData SavedStateData => _modelData.UserData;
 
-    public Vector2 leftBottomScreen;
-    public Vector2 rightTopScreen;
+    [HideInInspector] public Vector2 leftBottomScreen;
+    [HideInInspector] public Vector2 rightTopScreen;
 
     private void Awake()
     {
       CurrentGameState = new ReactiveProperty<GameState>(GameState.StartApp);
     }
 
-    private async void Start()
+    private void Start()
     {
+      _modelData = new ModelData(_clearData);
+
       GetScreenCoordinates();
 
       _factory = new Factory(this);
-      await viewController.Construct(this, _factory);
+      viewController.Construct(this, _factory);
 
-      SelectLevel.Subscribe(i => SelectLevelAtIndex(i)
-      ).AddTo(_disposableMenu);
+      SelectLevel.Subscribe(SelectLevelAtIndex)
+        .AddTo(_disposableMenu);
 
-      await LoadFromFile();
-      //StartLevel();
       ShowMenu();
     }
 
     private void GetScreenCoordinates()
     {
-      leftBottomScreen = Camera.main.ViewportToWorldPoint(Vector3.zero);
-      rightTopScreen = Camera.main.ViewportToWorldPoint(Vector3.one);
-    }
-
-    private async Task LoadFromFile()
-    {
-      if (_clearData) await SaveLoader.Clear();
-      _gameStateData = await SaveLoader.Load();
-      
-      _currentLevelData.Score = _gameStateData.Score;
+      Camera main = Camera.main;
+      leftBottomScreen = main.ViewportToWorldPoint(Vector3.zero);
+      rightTopScreen = main.ViewportToWorldPoint(Vector3.one);
     }
 
     private void ChangeState()
@@ -86,16 +81,18 @@ namespace Logic
       }
     }
 
-    private async Task WinGame()
+    private IEnumerator WinGame()
     {
-      if (_currentLevelData.Level == _gameStateData.LastOpenLevel)
+      if (_modelData.Level == _modelData.UserData.LastOpenLevel)
       {
-        _gameStateData.LastOpenLevel = _currentLevelData.Level + 1;
+        _modelData.UserData.LastOpenLevel = _modelData.Level + 1;
       }
 
-      _gameStateData.Score += _currentLevelData.Score;
+      _modelData.UserData.Score += _modelData.Score;
 
-      await SaveLoader.Save(_gameStateData);
+      _modelData.Save();
+      Debug.Log("Win game end method");
+      yield return null;
     }
 
     void ShowMenu()
@@ -108,69 +105,48 @@ namespace Logic
       StartLevel(level);
     }
 
-    async void StartLevel(int level)
+    void StartLevel(int level)
     {
-      await LoadLevelData(level);
-      await CreateObjects();
-      await Subscribes();
-      CurrentGameState.Value = GameState.Game;
-    }
-
-    private async Task LoadLevelData(int level)
-    {
-      _currentLevelData = new CurrentData();
-
-      LevelData levelData = _factory.GetDataLevel(level);
-
-      _currentLevelData.Level = level;
-      _currentLevelData.PlayerLifes.Value = 3;
-      _currentLevelData.EnemiesDestroyed.Value = 0;
-      _currentLevelData.AsteroidCooldown = levelData.AsteroidCooldown;
-      _currentLevelData.AsteroidMaxView = levelData.MaxAsteriodView;
-
-      GameObject.FindWithTag("Background").GetComponent<SpriteRenderer>().sprite = levelData.Background;
-
-      //data saved
-      if (SavedStateData.LevelsState.ContainsKey(level))
-      {
-        _currentLevelData.AsteroidTypes = SavedStateData.LevelsState[level].AsteriodTypes;
-        _currentLevelData.EnemiesDestroyForWIn.Value = SavedStateData.LevelsState[level].AsteriodVictory;
-      }
-      //new data
-      else
-      {
-        _currentLevelData.EnemiesDestroyForWIn.Value = Random.Range(
-          levelData.MinAsteriodVictory,
-          levelData.MaxAsteriodVictory
+      _modelData.LoadLevelData(level, _factory)
+        .ToObservable()
+        .Subscribe(_ =>
+          {
+            Debug.Log("end LoadLevelData");
+            CreateObjects()
+              .ToObservable()
+              .Subscribe(_ =>
+                {
+                  Debug.Log("end CreateObjects");
+                  Subscribes()
+                    .ToObservable()
+                    .Subscribe(_ =>
+                    {
+                      Debug.Log("end Subscribes");
+                      CurrentGameState.Value = GameState.Game;
+                    });
+                }
+              );
+          }
         );
 
-        int asteroidTypes = Random.Range(
-          levelData.MinAsteriodTypes,
-          levelData.MaxAsteriodTypes
-        );
-
-        asteroidTypes = Mathf.Clamp(asteroidTypes, 1, _factory.AsteroidsMaxTypes);
-        _currentLevelData.AsteroidTypes = asteroidTypes;
-
-        SavedStateData.LevelsState[level] = new Level
-        {
-          AsteriodTypes = _currentLevelData.AsteroidTypes,
-          AsteriodVictory = _currentLevelData.EnemiesDestroyForWIn.Value
-        };
-        SaveLoader.Save(SavedStateData);
-      }
+      //await _modelData.LoadLevelData(level, _factory);
+      // await CreateObjects();
+      // await Subscribes();
+      // CurrentGameState.Value = GameState.Game;
     }
 
-    private async Task CreateObjects()
+    private IEnumerator CreateObjects()
     {
       _asteroidSpawner = _factory.CreateAsteroidSpawner();
       _asteroidSpawner.Construct(this, _factory);
 
       _playerControl = _factory.CreatePlayer();
       _playerControl.Construct(this, _factory);
+      
+      yield break;
     }
 
-    private async Task Subscribes()
+    private IEnumerator Subscribes()
     {
       viewController.isFire
         .ObserveEveryValueChanged(x => x.Value)
@@ -185,17 +161,22 @@ namespace Logic
 
       Observable.EveryUpdate().Subscribe(x => MovePlayer()).AddTo(_disposable);
 
-      _currentLevelData.EnemiesDestroyed
+      _modelData.EnemiesDestroyed
         .ObserveEveryValueChanged(x => x.Value)
         .Subscribe(async x =>
         {
-          if (_currentLevelData.EnemiesDestroyed.Value >= _currentLevelData.EnemiesDestroyForWIn.Value)
+          if (_modelData.EnemiesDestroyed.Value >= _modelData.EnemiesDestroyForWIn.Value)
           {
-            await WinGame();
-            CurrentGameState.Value = GameState.Win;
+            Observable.FromCoroutine(WinGame)
+              .Subscribe(_ =>
+              {
+                CurrentGameState.Value = GameState.Win;
+              });
           }
         })
         .AddTo(_disposable);
+      
+      yield break;
     }
 
 

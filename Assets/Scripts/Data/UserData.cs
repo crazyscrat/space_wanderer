@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 [Serializable]
-public class GameStateData
+public class UserData
 {
   public int LastOpenLevel = 1;
   public int Score = 0;
