@@ -10,7 +10,10 @@ namespace Logic
 {
   public class LogicController : MonoBehaviour
   {
+    [Header("Delete save data file")]
     [SerializeField] private bool _clearData = false;
+    
+    [Space]
     [SerializeField] private ViewController viewController;
     [SerializeField] private AsteroidSpawner _asteroidSpawner;
 
@@ -28,7 +31,6 @@ namespace Logic
 
     public ReactiveCommand<int> SelectLevel = new ReactiveCommand<int>();
 
-    //private GameStateData _gameStateData;
     public UserData SavedStateData => _modelData.UserData;
 
     [HideInInspector] public Vector2 leftBottomScreen;
@@ -91,7 +93,6 @@ namespace Logic
       _modelData.UserData.Score += _modelData.Score;
 
       _modelData.Save();
-      Debug.Log("Win game end method");
       yield return null;
     }
 
@@ -111,28 +112,20 @@ namespace Logic
         .ToObservable()
         .Subscribe(_ =>
           {
-            Debug.Log("end LoadLevelData");
             CreateObjects()
               .ToObservable()
               .Subscribe(_ =>
                 {
-                  Debug.Log("end CreateObjects");
                   Subscribes()
                     .ToObservable()
                     .Subscribe(_ =>
                     {
-                      Debug.Log("end Subscribes");
                       CurrentGameState.Value = GameState.Game;
                     });
                 }
               );
           }
         );
-
-      //await _modelData.LoadLevelData(level, _factory);
-      // await CreateObjects();
-      // await Subscribes();
-      // CurrentGameState.Value = GameState.Game;
     }
 
     private IEnumerator CreateObjects()

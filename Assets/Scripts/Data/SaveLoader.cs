@@ -18,7 +18,6 @@ public static class SaveLoader
             formatter.Serialize(stream, data);
             stream.Close();
         
-            Debug.Log("Save data");
             return true;
         }
         catch (Exception e)

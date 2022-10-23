@@ -393,9 +393,9 @@ MonoBehaviour:
   viewController: {fileID: 1155352802}
   _asteroidSpawner: {fileID: 0}
   _playerControl: {fileID: 0}
-  _currentLevelData:
+  _modelData:
     PlayerLifes:
-      value: 3
+      value: 0
     EnemiesDestroyed:
       value: 0
     EnemiesDestroyForWIn:
@@ -1104,7 +1104,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 40, y: 0}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &557375760
