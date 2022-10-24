@@ -1,0 +1,1 @@
+﻿public enum AmmoPower{Base, Middle, Big}

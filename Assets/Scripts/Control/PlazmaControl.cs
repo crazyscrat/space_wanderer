@@ -4,7 +4,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 
-public class MissileControl : Ammo
+public class PlazmaControl : Ammo
 {
     [SerializeField] private Collider2D _collider;
     [SerializeField] private float _speed = 1f;
@@ -25,12 +25,12 @@ public class MissileControl : Ammo
     {
         _logic = logic;
     }
-    
+
     public override Sprite GetSprite()
     {
         return GetComponent<SpriteRenderer>().sprite;
     }
-    
+
     public override void Fly()
     {
         _collider.OnTriggerEnter2DAsObservable()

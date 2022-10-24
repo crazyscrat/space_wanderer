@@ -12,6 +12,8 @@ namespace UI
     [SerializeField] private PanelLevelFinish _panelGameWin;
     [SerializeField] private PanelHUD _panelHUD;
     [SerializeField] private PanelMenu _panelMenu;
+    
+    public PanelHUD panelHUD => _panelHUD;
 
     private CompositeDisposable _disposable = new CompositeDisposable();
     private LogicController _logic;

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8308320570335892433}
   - component: {fileID: 975460128494728973}
   m_Layer: 0
-  m_Name: Missile
+  m_Name: Missile_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,5 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e868252bb98a31b46b5c4d186f65e086, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NameAmmo: Missile 1
+  _type: 0
   _collider: {fileID: 8308320570335892433}
   _speed: 5

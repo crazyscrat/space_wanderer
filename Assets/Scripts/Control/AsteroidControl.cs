@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Control;
-using Logic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;

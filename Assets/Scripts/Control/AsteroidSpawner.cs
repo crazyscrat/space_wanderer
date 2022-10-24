@@ -57,7 +57,6 @@ public class AsteroidSpawner : MonoBehaviour
       .Repeat()
       .Subscribe(_ =>
         {
-          Debug.Log("SPAWN TIMER");
           if (_asteroidsView < _logic.ModelData.AsteroidMaxView) SpawnAsteroid();
         }
       ).AddTo(_disposable);

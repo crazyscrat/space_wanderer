@@ -19,6 +19,7 @@ namespace Data
     public float AsteroidCooldown = 0f;
     public int Level = 0;
     public int Score = 0;
+    public Ammo SelectedAmmo;
     
     private UserData _gameUserData;
     public UserData UserData => _gameUserData;
@@ -28,18 +29,13 @@ namespace Data
     public ModelData(bool clearData)
     {
       _clearData = clearData;
-      
-      Load();
+
+      LoadFromFile(); 
     }
 
     #region SAVE LOAD
 
-    private async void Load()
-    {
-      await LoadFromFile();
-    }
-
-    private async Task LoadFromFile()
+    private void LoadFromFile()
     {
       if (_clearData) SaveLoader.Clear();
       _gameUserData = SaveLoader.Load();

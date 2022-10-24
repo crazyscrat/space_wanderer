@@ -5,23 +5,23 @@ namespace UI
 {
   public class TouchButton : EventTrigger
   {
-    public ReactiveProperty<bool> isFire { get; private set; }
+    public ReactiveProperty<bool> isAction { get; private set; }
 
     private void Awake()
     {
-      isFire = new ReactiveProperty<bool>(false);
+      isAction = new ReactiveProperty<bool>(false);
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
       base.OnPointerDown(eventData);
-      isFire.Value = true;
+      isAction.Value = true;
     }
 
     public override void OnPointerUp(PointerEventData eventData)
     {
       base.OnPointerUp(eventData);
-      isFire.Value = false;
+      isAction.Value = false;
     }
   }
 }

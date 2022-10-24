@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using Logic;
 using UniRx;
 using UniRx.Triggers;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
@@ -20,7 +17,7 @@ public class PlayerControl : MonoBehaviour
   private bool _shooting = false;
 
   private bool _canShoot = true;
-  [SerializeField] private MissileType _missileType = MissileType.Base;
+  [SerializeField] private AmmoPower ammoPower = AmmoPower.Base;
 
   private Transform _transform;
 
@@ -50,6 +47,11 @@ public class PlayerControl : MonoBehaviour
       Observable.EveryUpdate()
         .Where(_=>Input.GetMouseButtonUp(0))
         .Subscribe(x => StopFire())
+        .AddTo(_disposable);
+      
+      Observable.EveryUpdate()
+        .Where(_=>Input.GetKeyDown(KeyCode.E))
+        .Subscribe(x => _logic.ChangeAmmo())
         .AddTo(_disposable);
 #endif
   }
@@ -101,8 +103,8 @@ public class PlayerControl : MonoBehaviour
   {
     if(_transform != null)
     {
-      MissileControl missile = _factory.GetMissile((int) _missileType, _transform.position + Vector3.up);
-      missile.Fly();
+      Ammo ammo = _factory.GetMissile(_transform.position + Vector3.up);
+      ammo.Fly();
     }
   }
   

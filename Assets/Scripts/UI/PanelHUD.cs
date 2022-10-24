@@ -10,6 +10,7 @@ public class PanelHUD : MonoBehaviour
 {
   [SerializeField] private GameObject[] lifes;
   [SerializeField] private TouchButton buttonFire;
+  [SerializeField] public AmmoButton buttonAmmo;
   [SerializeField] private Joystick joystick;
   [SerializeField] private TMP_Text _textScore;
 
@@ -45,11 +46,28 @@ public class PanelHUD : MonoBehaviour
         value => _viewController.JoystickPosition.Value = joystick.Value
       ).AddTo(_disposable);
 
-    buttonFire.isFire
-      .ObserveEveryValueChanged(f => buttonFire.isFire.Value)
+    buttonFire.isAction
+      .ObserveEveryValueChanged(f => buttonFire.isAction.Value)
       .Subscribe(
-        value => _viewController.isFire.Value = buttonFire.isFire.Value
+        value => _viewController.isFire.Value = buttonFire.isAction.Value
       ).AddTo(_disposable);
+    
+    buttonAmmo.TouchButton.isAction
+      .ObserveEveryValueChanged(f => buttonAmmo.TouchButton.isAction.Value)
+      .Subscribe(
+        value => ChangeAmmo()
+      ).AddTo(_disposable);
+  }
+
+  private void ChangeAmmo()
+  {
+    _logic.ChangeAmmo();
+    SetImageAmmo();
+  }
+
+  public void SetImageAmmo()
+  {
+    buttonAmmo.SetImage(_logic.ModelData.SelectedAmmo.GetSprite());
   }
 
   private void ChangeScore()

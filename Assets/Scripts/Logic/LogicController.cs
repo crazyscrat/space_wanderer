@@ -10,11 +10,10 @@ namespace Logic
 {
   public class LogicController : MonoBehaviour
   {
-    [Header("Delete save data file")]
-    [SerializeField] private bool _clearData = false;
-    
-    [Space]
-    [SerializeField] private ViewController viewController;
+    [Header("Delete save data file")] [SerializeField]
+    private bool _clearData = false;
+
+    [Space] [SerializeField] private ViewController viewController;
     [SerializeField] private AsteroidSpawner _asteroidSpawner;
 
     [SerializeField] private PlayerControl _playerControl;
@@ -54,6 +53,8 @@ namespace Logic
         .AddTo(_disposableMenu);
 
       ShowMenu();
+
+      ChangeAmmo();
     }
 
     private void GetScreenCoordinates()
@@ -118,10 +119,7 @@ namespace Logic
                 {
                   Subscribes()
                     .ToObservable()
-                    .Subscribe(_ =>
-                    {
-                      CurrentGameState.Value = GameState.Game;
-                    });
+                    .Subscribe(_ => { CurrentGameState.Value = GameState.Game; });
                 }
               );
           }
@@ -135,7 +133,7 @@ namespace Logic
 
       _playerControl = _factory.CreatePlayer();
       _playerControl.Construct(this, _factory);
-      
+
       yield break;
     }
 
@@ -161,14 +159,11 @@ namespace Logic
           if (_modelData.EnemiesDestroyed.Value >= _modelData.EnemiesDestroyForWIn.Value)
           {
             Observable.FromCoroutine(WinGame)
-              .Subscribe(_ =>
-              {
-                CurrentGameState.Value = GameState.Win;
-              });
+              .Subscribe(_ => { CurrentGameState.Value = GameState.Win; });
           }
         })
         .AddTo(_disposable);
-      
+
       yield break;
     }
 
@@ -178,7 +173,7 @@ namespace Logic
       _disposable.Clear();
       Destroy(_playerControl.gameObject);
       _factory.DestroyAllAsteroids();
-      _factory.DestroyAllMissiles();
+      _factory.DestroyAllAmmo();
     }
 
     private void MovePlayer()
@@ -202,6 +197,14 @@ namespace Logic
     {
       _disposable.Clear();
       _disposableMenu.Clear();
+    }
+
+    public void ChangeAmmo()
+    {
+      _modelData.SelectedAmmo = _factory.GetNextAmmo();
+#if UNITY_EDITOR
+      viewController.panelHUD.SetImageAmmo();
+#endif
     }
   }
 }
