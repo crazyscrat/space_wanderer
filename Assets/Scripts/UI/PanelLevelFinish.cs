@@ -14,7 +14,7 @@ public class PanelLevelFinish : MonoBehaviour
         _buttonMenu.onClick.AddListener(delegate
         {
             //_viewControl.ActivateMenu(true);
-            _viewController.SetState(GameState.Menu);
+            _viewController.SetState(GameStateEnum.Menu);
         });
     }
 }

@@ -30,23 +30,23 @@ public class AsteroidSpawner : MonoBehaviour
       .AddTo(_disposable);
   }
 
-  private void ChangeState(GameState state)
+  private void ChangeState(GameStateEnum stateEnum)
   {
-    switch (state)
+    switch (stateEnum)
     {
-      case GameState.Menu:
+      case GameStateEnum.Menu:
         StopSpawn();
         break;
-      case GameState.Game:
+      case GameStateEnum.Game:
         StartSpawn();
         break;
-      case GameState.Win:
+      case GameStateEnum.Win:
         StopSpawn();
         break;
-      case GameState.GameOver:
+      case GameStateEnum.GameOver:
         StopSpawn();
         break;
-      case GameState.Pause:
+      case GameStateEnum.Pause:
         break;
     }
   }

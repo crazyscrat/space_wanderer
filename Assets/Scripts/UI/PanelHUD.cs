@@ -88,7 +88,7 @@ public class PanelHUD : MonoBehaviour
 
     if (value == 0)
     {
-      _logic.CurrentGameState.Value = GameState.GameOver;
+      _logic.CurrentGameState.Value = GameStateEnum.GameOver;
     }
   }
 

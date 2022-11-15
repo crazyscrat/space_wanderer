@@ -1,1 +1,0 @@
-﻿public enum GameState{StartApp, Menu, Game, Win, GameOver, Pause}

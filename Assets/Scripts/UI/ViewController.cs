@@ -48,27 +48,27 @@ namespace UI
       _disposable.Clear();
     }
 
-    private void ChangeState(GameState state)
+    private void ChangeState(GameStateEnum stateEnum)
     {
-      switch (state)
+      switch (stateEnum)
       {
-        case GameState.Menu:
+        case GameStateEnum.Menu:
           ActivateMenu(true);
           break;
-        case GameState.Game:
+        case GameStateEnum.Game:
           ActivateLevelUI(true);
           PanelGameOverActive(false);
           PanelGameWinActive(false);
           break;
-        case GameState.Win:
+        case GameStateEnum.Win:
           ActivateLevelUI(false);
           PanelGameWinActive(true);
           break;
-        case GameState.GameOver:
+        case GameStateEnum.GameOver:
           ActivateLevelUI(false);
           PanelGameOverActive(true);
           break;
-        case GameState.Pause:
+        case GameStateEnum.Pause:
           break;
       }
     }
@@ -120,9 +120,9 @@ namespace UI
       _panelMenu.gameObject.SetActive(active);
     }
 
-    public void SetState(GameState state)
+    public void SetState(GameStateEnum stateEnum)
     {
-      _logic.CurrentGameState.Value = state;
+      _logic.CurrentGameState.Value = stateEnum;
     }
   }
 }

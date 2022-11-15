@@ -1,32 +1,30 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-using Data;
+﻿using Data;
 using UI;
 using UnityEngine;
 using UniRx;
-using Random = UnityEngine.Random;
 
 namespace Logic
 {
   public class LogicController : MonoBehaviour
   {
+    #region FIELDS
+
     [Header("Delete save data file")] [SerializeField]
     private bool _clearData = false;
 
-    [Space] [SerializeField] private ViewController viewController;
+    [Space] 
+    [SerializeField] private ViewController viewController;
     [SerializeField] private AsteroidSpawner _asteroidSpawner;
 
-    [SerializeField] private PlayerControl _playerControl;
+    [SerializeField] internal PlayerControl playerControl;
 
     private Factory _factory;
     private CompositeDisposable _disposable = new CompositeDisposable();
-    private CompositeDisposable _disposableMenu = new CompositeDisposable();
 
-    [SerializeField] private ModelData _modelData;
+    private ModelData _modelData;
     public ModelData ModelData => _modelData;
 
-
-    public ReactiveProperty<GameState> CurrentGameState { get; set; }
+    public ReactiveProperty<GameStateEnum> CurrentGameState { get; set; }
 
     public ReactiveCommand<int> SelectLevel = new ReactiveCommand<int>();
 
@@ -35,9 +33,20 @@ namespace Logic
     [HideInInspector] public Vector2 leftBottomScreen;
     [HideInInspector] public Vector2 rightTopScreen;
 
+    private IGameState _curGameState;
+    private StartAppState _startAppState;
+    private MenuState _menuState;
+    private GameState _gameState;
+    private WinGameState _winGameState;
+    private LoadGameState _loadGameState;
+    private GameOverState _gameOverState;
+    
+    #endregion
+
     private void Awake()
     {
-      CurrentGameState = new ReactiveProperty<GameState>(GameState.StartApp);
+      _startAppState = new StartAppState(this);
+      SetGameState(_startAppState);
     }
 
     private void Start()
@@ -48,11 +57,16 @@ namespace Logic
 
       _factory = new Factory(this);
       viewController.Construct(this, _factory);
+      
+      _menuState = new MenuState(this, _factory);
+      _gameState = new GameState(this, viewController);
+      _winGameState = new WinGameState(this, _factory);
+      _loadGameState = new LoadGameState(this, _factory, _asteroidSpawner);
+      _gameOverState = new GameOverState(this, _factory);
+      
+      Subscribes();
 
-      SelectLevel.Subscribe(SelectLevelAtIndex)
-        .AddTo(_disposableMenu);
-
-      ShowMenu();
+      CurrentGameState.Value = GameStateEnum.Menu;
 
       ChangeAmmo();
     }
@@ -60,143 +74,61 @@ namespace Logic
     private void GetScreenCoordinates()
     {
       Camera main = Camera.main;
-      leftBottomScreen = main.ViewportToWorldPoint(Vector3.zero);
-      rightTopScreen = main.ViewportToWorldPoint(Vector3.one);
+      if (main is not null)
+      {
+        leftBottomScreen = main.ViewportToWorldPoint(Vector3.zero);
+        rightTopScreen = main.ViewportToWorldPoint(Vector3.one);
+      }
     }
 
+    private void SetGameState(IGameState newState)
+    {
+      if(_curGameState != null) _curGameState.Exit();
+      _curGameState = newState;
+      _curGameState.Enter();
+    }
+    
     private void ChangeState()
     {
       switch (CurrentGameState.Value)
       {
-        case GameState.Menu:
-          StopLevel();
+        case GameStateEnum.Menu:
+          SetGameState(_menuState);
           break;
-        case GameState.Game:
+        case GameStateEnum.Game:
+          SetGameState(_gameState);
           break;
-        case GameState.Win:
-          StopLevel();
+        case GameStateEnum.Win:
+          SetGameState(_winGameState);
           break;
-        case GameState.GameOver:
-          StopLevel();
+        case GameStateEnum.GameOver:
+          SetGameState(_gameOverState);
           break;
-        case GameState.Pause:
+        case GameStateEnum.Pause:
+          break;
+        case GameStateEnum.StartApp:
           break;
       }
     }
 
-    private IEnumerator WinGame()
+    internal void StartLevel(int level)
     {
-      if (_modelData.Level == _modelData.UserData.LastOpenLevel)
-      {
-        _modelData.UserData.LastOpenLevel = _modelData.Level + 1;
-      }
-
-      _modelData.UserData.Score += _modelData.Score;
-
-      _modelData.Save();
-      yield return null;
+      _loadGameState.SetLevel(level);
+      SetGameState(_loadGameState);
     }
-
-    void ShowMenu()
+    
+    private void Subscribes()
     {
-      CurrentGameState.Value = GameState.Menu;
-    }
-
-    private void SelectLevelAtIndex(int level)
-    {
-      StartLevel(level);
-    }
-
-    void StartLevel(int level)
-    {
-      _modelData.LoadLevelData(level, _factory)
-        .ToObservable()
-        .Subscribe(_ =>
-          {
-            CreateObjects()
-              .ToObservable()
-              .Subscribe(_ =>
-                {
-                  Subscribes()
-                    .ToObservable()
-                    .Subscribe(_ => { CurrentGameState.Value = GameState.Game; });
-                }
-              );
-          }
-        );
-    }
-
-    private IEnumerator CreateObjects()
-    {
-      _asteroidSpawner = _factory.CreateAsteroidSpawner();
-      _asteroidSpawner.Construct(this, _factory);
-
-      _playerControl = _factory.CreatePlayer();
-      _playerControl.Construct(this, _factory);
-
-      yield break;
-    }
-
-    private IEnumerator Subscribes()
-    {
-      viewController.isFire
-        .ObserveEveryValueChanged(x => x.Value)
-        .Subscribe(value => OnClickFire(viewController.isFire.Value))
-        .AddTo(_disposable);
-
       CurrentGameState
         .ObserveEveryValueChanged(x => x.Value)
         .Skip(1)
         .Subscribe(x => { ChangeState(); })
         .AddTo(_disposable);
-
-      Observable.EveryUpdate().Subscribe(x => MovePlayer()).AddTo(_disposable);
-
-      _modelData.EnemiesDestroyed
-        .ObserveEveryValueChanged(x => x.Value)
-        .Subscribe(async x =>
-        {
-          if (_modelData.EnemiesDestroyed.Value >= _modelData.EnemiesDestroyForWIn.Value)
-          {
-            Observable.FromCoroutine(WinGame)
-              .Subscribe(_ => { CurrentGameState.Value = GameState.Win; });
-          }
-        })
-        .AddTo(_disposable);
-
-      yield break;
-    }
-
-
-    private void StopLevel()
-    {
-      _disposable.Clear();
-      Destroy(_playerControl.gameObject);
-      _factory.DestroyAllAsteroids();
-      _factory.DestroyAllAmmo();
-    }
-
-    private void MovePlayer()
-    {
-      _playerControl.Move(viewController.JoystickPosition.Value);
-    }
-
-    private void OnClickFire(bool fire)
-    {
-      if (fire)
-      {
-        _playerControl.StartFire();
-      }
-      else
-      {
-        _playerControl.StopFire();
-      }
     }
 
     private void OnDestroy()
     {
       _disposable.Clear();
-      _disposableMenu.Clear();
     }
 
     public void ChangeAmmo()
