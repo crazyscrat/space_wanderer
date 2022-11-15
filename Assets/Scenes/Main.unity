@@ -390,9 +390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _clearData: 0
-  viewController: {fileID: 1155352802}
-  _asteroidSpawner: {fileID: 0}
-  _playerControl: {fileID: 0}
+  _viewController: {fileID: 1155352802}
   _modelData:
     PlayerLifes:
       value: 0
@@ -406,6 +404,9 @@ MonoBehaviour:
     Level: 0
     Score: 0
     SelectedAmmo: {fileID: 0}
+    _gameUserData:
+      LastOpenLevel: 1
+      Score: 0
   leftBottomScreen: {x: 0, y: 0}
   rightTopScreen: {x: 0, y: 0}
 --- !u!1 &251557580
