@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class PanelMenu : MonoBehaviour
 {
+    #region FIELDS
+
     [SerializeField] private Transform _parentLevelButtons;
     [SerializeField] private TMP_Text _textScore;
     
     private Factory _factory;
     private LevelButton[] _buttons;
+
+    #endregion
 
     public void Construct(Factory factory)
     {

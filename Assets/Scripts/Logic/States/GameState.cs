@@ -5,10 +5,14 @@ using UnityEngine;
 
 public class GameState : IGameState
 {
+  #region FIELDS
+
   private CompositeDisposable _disposable = new CompositeDisposable();
 
   private ViewController _view;
   private LogicController _logic;
+
+  #endregion
 
   public GameState(LogicController logic,
     ViewController view)
@@ -54,17 +58,17 @@ public class GameState : IGameState
   {
     Observable.EveryUpdate()
       .Subscribe(x =>
-        _logic.playerControl.Move(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))))
+        _logic.PlayerControl.Move(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))))
       .AddTo(_disposable);
 
     Observable.EveryUpdate()
       .Where(_ => Input.GetMouseButtonDown(0))
-      .Subscribe(x => _logic.playerControl.StartFire())
+      .Subscribe(x => _logic.PlayerControl.StartFire())
       .AddTo(_disposable);
 
     Observable.EveryUpdate()
       .Where(_ => Input.GetMouseButtonUp(0))
-      .Subscribe(x => _logic.playerControl.StopFire())
+      .Subscribe(x => _logic.PlayerControl.StopFire())
       .AddTo(_disposable);
     
     Observable.EveryUpdate()
@@ -94,16 +98,16 @@ public class GameState : IGameState
   {
     if (fire)
     {
-      _logic.playerControl.StartFire();
+      _logic.PlayerControl.StartFire();
     }
     else
     {
-      _logic.playerControl.StopFire();
+      _logic.PlayerControl.StopFire();
     }
   }
 
   private void MovePlayer()
   {
-    _logic.playerControl.Move(_view.JoystickPosition.Value);
+    _logic.PlayerControl.Move(_view.JoystickPosition.Value);
   }
 }

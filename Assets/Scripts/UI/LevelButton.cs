@@ -5,11 +5,15 @@ using UnityEngine.UI;
 
 public class LevelButton : MonoBehaviour
 {
+  #region FIELDS
+
   [SerializeField] private TMP_Text _textButton;
   [SerializeField] private Button _button;
 
   private LogicController _logic;
   private int _levelNum;
+
+  #endregion
 
   public void Construct(int index, LogicController logic)
   {

@@ -6,6 +6,8 @@ using Random = UnityEngine.Random;
 
 public class AsteroidSpawner : MonoBehaviour
 {
+  #region FIELDS
+
   [Range(min: 1, max: 10)] [SerializeField]
   private float _rangeOneSide = 5f;
 
@@ -14,6 +16,8 @@ public class AsteroidSpawner : MonoBehaviour
   public int _asteroidsView = 0;
 
   private CompositeDisposable _disposable = new CompositeDisposable();
+
+  #endregion
 
   public void Construct(LogicController logic)
   {

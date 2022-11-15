@@ -13,10 +13,10 @@ namespace Logic
     private bool _clearData = false;
 
     [Space] 
-    [SerializeField] private ViewController viewController;
-    [SerializeField] private AsteroidSpawner _asteroidSpawner;
-
-    [SerializeField] internal PlayerControl playerControl;
+    [SerializeField] private ViewController _viewController;
+    
+    private AsteroidSpawner _asteroidSpawner;
+    internal PlayerControl PlayerControl;
 
     private Factory factory;
     public Factory Factory => factory;
@@ -31,7 +31,6 @@ namespace Logic
     public ReactiveCommand<int> SelectLevel = new ReactiveCommand<int>();
 
     public UserData SavedStateData => _modelData.UserData;
-
 
     [HideInInspector] public Vector2 leftBottomScreen;
     [HideInInspector] public Vector2 rightTopScreen;
@@ -64,10 +63,10 @@ namespace Logic
       _modelData = new ModelData(_clearData);
 
       factory = new Factory(this);
-      viewController.Construct(this, Factory);
+      _viewController.Construct(this, Factory);
 
       _menuState = new MenuState(this);
-      _gameState = new GameState(this, viewController);
+      _gameState = new GameState(this, _viewController);
       _winGameState = new WinGameState(this);
       _loadGameState = new LoadGameState(this, _asteroidSpawner);
       _gameOverState = new GameOverState(this);

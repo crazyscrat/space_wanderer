@@ -7,7 +7,9 @@ namespace UI
 {
   public class ViewController : MonoBehaviour
   {
-    
+
+    #region FIELDS
+
     [SerializeField] private PanelLevelFinish panelLevelFinish;
     [SerializeField] private PanelLevelFinish _panelGameWin;
     [SerializeField] private PanelHUD _panelHUD;
@@ -21,6 +23,8 @@ namespace UI
 
     public ReactiveProperty<bool> isFire { get; private set; }
     public ReactiveProperty<Vector2> JoystickPosition { get; set; }
+
+    #endregion
     
     public void Construct(LogicController logic, Factory factory)
     {

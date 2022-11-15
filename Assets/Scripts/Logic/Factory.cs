@@ -7,6 +7,8 @@ namespace Logic
 {
   public class Factory
   {
+    #region FIELDS
+
     private GameObject _playerPrefab;
     private GameObject _asteroidSpawnerPrefab;
     private GameObject _buttonLevelPrefab;
@@ -19,6 +21,8 @@ namespace Logic
     private LogicController _logic;
 
     public int AsteroidsMaxTypes => _asteroidPrefabs.Length;
+
+    #endregion
     
     public Factory(LogicController logic)
     {

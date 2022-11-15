@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class AsteroidControl : Enemy
 {
+    #region FIELDS
+
     public string nameAsteroid = "Asteroid_";
     [HideInInspector] public int index = 0;
     [SerializeField] private int _scoreAdd = 1;
@@ -15,6 +17,8 @@ public class AsteroidControl : Enemy
     private Collider2D _collider;
 
     private Transform _transform;
+
+    #endregion
 
     private void Awake()
     {

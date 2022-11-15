@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class PanelHUD : MonoBehaviour
 {
+  #region FIELDS
+
   [SerializeField] private GameObject[] lifes;
   [SerializeField] private TouchButton buttonFire;
   [SerializeField] public AmmoButton buttonAmmo;
@@ -18,6 +20,8 @@ public class PanelHUD : MonoBehaviour
   private LogicController _logic;
 
   private CompositeDisposable _disposable = new CompositeDisposable();
+
+  #endregion
 
   public void Construct(ViewController viewController, LogicController logic)
   {

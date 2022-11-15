@@ -53,8 +53,8 @@ public class LoadGameState : IGameState
     _asteroidSpawner = _logic.Factory.CreateAsteroidSpawner();
     _asteroidSpawner.Construct(_logic);
 
-    _logic.playerControl = _logic.Factory.CreatePlayer();
-    _logic.playerControl.Construct(_logic);
+    _logic.PlayerControl = _logic.Factory.CreatePlayer();
+    _logic.PlayerControl.Construct(_logic);
 
     yield break;
   }

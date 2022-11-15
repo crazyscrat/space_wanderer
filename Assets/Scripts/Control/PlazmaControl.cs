@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlazmaControl : Ammo
 {
+    #region FIELDS
+
     [SerializeField] private Collider2D _collider;
     [SerializeField] private float _speed = 1f;
     
@@ -15,6 +17,8 @@ public class PlazmaControl : Ammo
     public AmmoPower Type => _type;
 
     private Transform _transform;
+
+    #endregion
 
     private void Awake()
     {

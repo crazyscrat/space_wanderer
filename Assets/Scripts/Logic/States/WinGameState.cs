@@ -26,9 +26,9 @@ public class WinGameState : IGameState
 
   private void StopGame()
   {
-    if (_logic.playerControl != null)
+    if (_logic.PlayerControl != null)
     {
-      Object.Destroy(_logic.playerControl.gameObject);
+      Object.Destroy(_logic.PlayerControl.gameObject);
     }
 
     _logic.Factory.DestroyAllAsteroids();

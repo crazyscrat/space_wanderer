@@ -4,8 +4,12 @@ using UnityEngine.UI;
 
 public class PanelLevelFinish : MonoBehaviour
 {
+    #region FIELDS
+
     [SerializeField] private Button _buttonMenu;
     private ViewController _viewController;
+
+    #endregion
 
     public void Construct(ViewController viewController)
     {
