@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using Data;
-using Logic;
+﻿using Logic;
 using UI;
 using UniRx;
+using UnityEngine;
 
 public class GameState : IGameState
 {
@@ -38,6 +37,47 @@ public class GameState : IGameState
         }
       })
       .AddTo(_disposable);
+
+    _view.panelHUD.buttonAmmo.TouchButton.isAction
+      .ObserveEveryValueChanged(f =>
+        _view.panelHUD.buttonAmmo.TouchButton.isAction.Value)
+      .Subscribe(
+        value => ChangeAmmo()
+      ).AddTo(_disposable);
+    
+#if UNITY_EDITOR
+    EditorControl();
+#endif
+  }
+
+  private void EditorControl()
+  {
+    Observable.EveryUpdate()
+      .Subscribe(x =>
+        _logic.playerControl.Move(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))))
+      .AddTo(_disposable);
+
+    Observable.EveryUpdate()
+      .Where(_ => Input.GetMouseButtonDown(0))
+      .Subscribe(x => _logic.playerControl.StartFire())
+      .AddTo(_disposable);
+
+    Observable.EveryUpdate()
+      .Where(_ => Input.GetMouseButtonUp(0))
+      .Subscribe(x => _logic.playerControl.StopFire())
+      .AddTo(_disposable);
+    
+    Observable.EveryUpdate()
+      .Where(_ => Input.GetKeyDown(KeyCode.E))
+      .Subscribe(x => ChangeAmmo())
+      .AddTo(_disposable);
+  }
+
+  private void ChangeAmmo()
+  {
+    _logic.ModelData.SelectedAmmo = _logic.Factory.GetNextAmmo();
+    
+    _view.panelHUD.SetImageAmmo();
   }
 
   public void Update()

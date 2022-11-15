@@ -20,8 +20,8 @@ namespace Data
     public int Level = 0;
     public int Score = 0;
     public Ammo SelectedAmmo;
-    
-    private UserData _gameUserData;
+
+    [SerializeField] private UserData _gameUserData;
     public UserData UserData => _gameUserData;
     
     private bool _clearData;
@@ -39,8 +39,6 @@ namespace Data
     {
       if (_clearData) SaveLoader.Clear();
       _gameUserData = SaveLoader.Load();
-      
-      Score = _gameUserData.Score;
     }
 
     public bool Save()
@@ -92,8 +90,6 @@ namespace Data
         };
         
         Save();
-
-        yield break;
       }
     }
   }

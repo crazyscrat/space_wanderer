@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
+  #region FIELDS
+
   [SerializeField] private Collider2D _collider;
   [SerializeField] private float _speed = 1f;
   [SerializeField] private float _cooldown = 0.3f;
   private Vector3 _startPosition;
-  private Factory _factory;
 
   private CompositeDisposable _disposable = new CompositeDisposable();
   private CompositeDisposable _disposableFire = new CompositeDisposable();
@@ -21,39 +22,18 @@ public class PlayerControl : MonoBehaviour
 
   private Transform _transform;
 
-  public void Construct(LogicController logic, Factory factory)
+  #endregion
+
+  public void Construct(LogicController logic)
   {
     _transform = transform;
     _logic = logic;
-    _factory = factory;
     _transform.position = GameObject.FindWithTag("PlayerPosition").transform.position;
 
     _collider.OnTriggerEnter2DAsObservable()
       .Where(t=>t.gameObject.layer == LayerMask.NameToLayer("Interaction"))
       .Subscribe(collision => TriggerEnter(collision))
       .AddTo(_disposable);
-
-#if UNITY_EDITOR
-    Observable.EveryUpdate()
-        .Subscribe(x => 
-          Move(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))))
-        .AddTo(_disposable);
-      
-      Observable.EveryUpdate()
-        .Where(_=>Input.GetMouseButtonDown(0))
-        .Subscribe(x => StartFire())
-        .AddTo(_disposable);
-      
-      Observable.EveryUpdate()
-        .Where(_=>Input.GetMouseButtonUp(0))
-        .Subscribe(x => StopFire())
-        .AddTo(_disposable);
-      
-      Observable.EveryUpdate()
-        .Where(_=>Input.GetKeyDown(KeyCode.E))
-        .Subscribe(x => _logic.ChangeAmmo())
-        .AddTo(_disposable);
-#endif
   }
 
   public void Move(Vector2 value)
@@ -103,7 +83,7 @@ public class PlayerControl : MonoBehaviour
   {
     if(_transform != null)
     {
-      Ammo ammo = _factory.GetMissile(_transform.position + Vector3.up);
+      Ammo ammo = _logic.Factory.GetMissile(_transform.position + Vector3.up);
       ammo.Fly();
     }
   }
@@ -113,7 +93,7 @@ public class PlayerControl : MonoBehaviour
     if (collision.tag.Equals("Enemy"))
     {
       _logic.ModelData.PlayerLifes.Value -= 1;
-      _factory.DestroyAsteroid(collision.gameObject);
+      _logic.Factory.DestroyAsteroid(collision.gameObject);
     }
   }
 

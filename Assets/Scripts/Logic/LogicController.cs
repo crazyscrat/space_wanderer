@@ -18,10 +18,12 @@ namespace Logic
 
     [SerializeField] internal PlayerControl playerControl;
 
-    private Factory _factory;
+    private Factory factory;
+    public Factory Factory => factory;
+
     private CompositeDisposable _disposable = new CompositeDisposable();
 
-    private ModelData _modelData;
+    [SerializeField] private ModelData _modelData;
     public ModelData ModelData => _modelData;
 
     public ReactiveProperty<GameStateEnum> CurrentGameState { get; set; }
@@ -29,6 +31,7 @@ namespace Logic
     public ReactiveCommand<int> SelectLevel = new ReactiveCommand<int>();
 
     public UserData SavedStateData => _modelData.UserData;
+
 
     [HideInInspector] public Vector2 leftBottomScreen;
     [HideInInspector] public Vector2 rightTopScreen;
@@ -47,28 +50,29 @@ namespace Logic
     {
       _startAppState = new StartAppState(this);
       SetGameState(_startAppState);
+      Init();
     }
 
     private void Start()
     {
+      GetScreenCoordinates();
+      CurrentGameState.Value = GameStateEnum.Menu;
+    }
+
+    private void Init()
+    {
       _modelData = new ModelData(_clearData);
 
-      GetScreenCoordinates();
+      factory = new Factory(this);
+      viewController.Construct(this, Factory);
 
-      _factory = new Factory(this);
-      viewController.Construct(this, _factory);
-      
-      _menuState = new MenuState(this, _factory);
+      _menuState = new MenuState(this);
       _gameState = new GameState(this, viewController);
-      _winGameState = new WinGameState(this, _factory);
-      _loadGameState = new LoadGameState(this, _factory, _asteroidSpawner);
-      _gameOverState = new GameOverState(this, _factory);
-      
+      _winGameState = new WinGameState(this);
+      _loadGameState = new LoadGameState(this, _asteroidSpawner);
+      _gameOverState = new GameOverState(this);
+
       Subscribes();
-
-      CurrentGameState.Value = GameStateEnum.Menu;
-
-      ChangeAmmo();
     }
 
     private void GetScreenCoordinates()
@@ -131,12 +135,12 @@ namespace Logic
       _disposable.Clear();
     }
 
-    public void ChangeAmmo()
-    {
-      _modelData.SelectedAmmo = _factory.GetNextAmmo();
-#if UNITY_EDITOR
-      viewController.panelHUD.SetImageAmmo();
-#endif
-    }
+//     public void ChangeAmmo()
+//     {
+//       _modelData.SelectedAmmo = _factory.GetNextAmmo();
+// #if UNITY_EDITOR
+//       viewController.panelHUD.SetImageAmmo();
+// #endif
+//     }
   }
 }

@@ -9,21 +9,18 @@ public class LoadGameState : IGameState
   private CompositeDisposable _disposable = new CompositeDisposable();
   private LogicController _logic;
   private AsteroidSpawner _asteroidSpawner;
-  private Factory _factory;
   private int _level;
 
   public LoadGameState(LogicController logic,
-    Factory factory,
     AsteroidSpawner asteroidSpawner)
   {
-    _factory = factory;
     _asteroidSpawner = asteroidSpawner;
     _logic = logic;
   }
 
   public void Enter()
   {
-    _logic.ModelData.LoadLevelData(_level, _factory)
+    _logic.ModelData.LoadLevelData(_level, _logic.Factory)
       .ToObservable()
       .Subscribe(_ =>
         {
@@ -53,11 +50,11 @@ public class LoadGameState : IGameState
   
   private IEnumerator CreateObjects()
   {
-    _asteroidSpawner = _factory.CreateAsteroidSpawner();
-    _asteroidSpawner.Construct(_logic, _factory);
+    _asteroidSpawner = _logic.Factory.CreateAsteroidSpawner();
+    _asteroidSpawner.Construct(_logic);
 
-    _logic.playerControl = _factory.CreatePlayer();
-    _logic.playerControl.Construct(_logic, _factory);
+    _logic.playerControl = _logic.Factory.CreatePlayer();
+    _logic.playerControl.Construct(_logic);
 
     yield break;
   }

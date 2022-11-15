@@ -28,41 +28,31 @@ public class PanelHUD : MonoBehaviour
   public void Subscribes()
   {
     _logic.ModelData.PlayerLifes
-      .ObserveEveryValueChanged(value => _logic.ModelData.PlayerLifes.Value)
-      .Subscribe(value =>
-      {
-        ChangeLifes();
-      })
+      .ObserveEveryValueChanged(value => 
+        _logic.ModelData.PlayerLifes.Value)
+      .Subscribe(value => { ChangeLifes(); })
       .AddTo(_disposable);
 
     _logic.ModelData.EnemiesDestroyed
-      .ObserveEveryValueChanged(value => _logic.ModelData.EnemiesDestroyed.Value)
+      .ObserveEveryValueChanged(
+        value => 
+          _logic.ModelData.EnemiesDestroyed.Value)
       .Subscribe(value => { ChangeScore(); })
       .AddTo(_disposable);
 
     joystick
       .ObserveEveryValueChanged(v2 => joystick.Value)
       .Subscribe(
-        value => _viewController.JoystickPosition.Value = joystick.Value
+        value => 
+          _viewController.JoystickPosition.Value = joystick.Value
       ).AddTo(_disposable);
 
     buttonFire.isAction
       .ObserveEveryValueChanged(f => buttonFire.isAction.Value)
       .Subscribe(
-        value => _viewController.isFire.Value = buttonFire.isAction.Value
+        value => 
+          _viewController.isFire.Value = buttonFire.isAction.Value
       ).AddTo(_disposable);
-    
-    buttonAmmo.TouchButton.isAction
-      .ObserveEveryValueChanged(f => buttonAmmo.TouchButton.isAction.Value)
-      .Subscribe(
-        value => ChangeAmmo()
-      ).AddTo(_disposable);
-  }
-
-  private void ChangeAmmo()
-  {
-    _logic.ChangeAmmo();
-    SetImageAmmo();
   }
 
   public void SetImageAmmo()
@@ -72,7 +62,8 @@ public class PanelHUD : MonoBehaviour
 
   private void ChangeScore()
   {
-    _textScore.text = $"{_logic.ModelData.EnemiesDestroyed.Value}/{_logic.ModelData.EnemiesDestroyForWIn.Value}";
+    _textScore.text =
+      $"{_logic.ModelData.EnemiesDestroyed.Value}/{_logic.ModelData.EnemiesDestroyForWIn.Value}";
   }
 
   private void ChangeLifes()

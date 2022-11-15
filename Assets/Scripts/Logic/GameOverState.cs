@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class GameOverState : IGameState
 {
-  private Factory _factory;
   private LogicController _logic;
 
-  public GameOverState(LogicController logic, Factory factory)
+  public GameOverState(LogicController logic)
   {
     _logic = logic;
-    _factory = factory;
   }
 
   public void Enter()
@@ -23,8 +21,8 @@ public class GameOverState : IGameState
     {
       Object.Destroy(_logic.playerControl.gameObject);
     }
-    _factory.DestroyAllAsteroids();
-    _factory.DestroyAllAmmo();
+    _logic.Factory.DestroyAllAsteroids();
+    _logic.Factory.DestroyAllAmmo();
   }
 
   public void Update()

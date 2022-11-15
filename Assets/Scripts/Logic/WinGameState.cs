@@ -6,14 +6,12 @@ using Object = UnityEngine.Object;
 public class WinGameState : IGameState
 {
   private CompositeDisposable _disposable = new CompositeDisposable();
-
-  private Factory _factory;
+  
   private LogicController _logic;
 
-  public WinGameState(LogicController logic, Factory factory)
+  public WinGameState(LogicController logic)
   {
     _logic = logic;
-    _factory = factory;
   }
 
   public void Enter()
@@ -33,8 +31,8 @@ public class WinGameState : IGameState
       Object.Destroy(_logic.playerControl.gameObject);
     }
 
-    _factory.DestroyAllAsteroids();
-    _factory.DestroyAllAmmo();
+    _logic.Factory.DestroyAllAsteroids();
+    _logic.Factory.DestroyAllAmmo();
   }
 
   public void Update()

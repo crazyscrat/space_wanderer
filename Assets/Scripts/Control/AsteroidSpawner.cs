@@ -10,15 +10,13 @@ public class AsteroidSpawner : MonoBehaviour
   private float _rangeOneSide = 5f;
 
   private LogicController _logic;
-  private Factory _factory;
 
   public int _asteroidsView = 0;
 
   private CompositeDisposable _disposable = new CompositeDisposable();
 
-  public void Construct(LogicController logic, Factory factory)
+  public void Construct(LogicController logic)
   {
-    _factory = factory;
     _logic = logic;
 
     _logic.CurrentGameState
@@ -72,7 +70,7 @@ public class AsteroidSpawner : MonoBehaviour
     Vector2 position = transform.position + Vector3.right * Random.Range(-7f, 7f);
 
     int index = Random.Range(0, _logic.ModelData.AsteroidTypes);
-    AsteroidControl asteroid = _factory.GetAsteroid(index, position);
+    AsteroidControl asteroid = _logic.Factory.GetAsteroid(index, position);
     asteroid.gameObject.SetActive(true);
     asteroid.Construct(this);
     asteroid.Fly();
